@@ -1,15 +1,11 @@
 // dps.js
-// Full DPS plugin: OCR → Damage → Enemy Tracker → Health Estimator → Overlay
+// Full DPS plugin with integrated OCR
 
 (function () {
 
     let running = false;
     let overlayCanvas = null;
     let ctx = null;
-
-    // OCR capture region (default: whole screen)
-    // You can refine this later
-    let captureX = 0, captureY = 0, captureW = window.innerWidth, captureH = window.innerHeight;
 
     // ---- Start the plugin ----
     function startDPSPlugin(doc) {
@@ -53,37 +49,23 @@
         overlayCanvas.height = window.innerHeight;
     }
 
-    // ---- Fake OCR (placeholder) ----
-    // Replace with real OCR later
-    function detectDamageNumbers() {
-        // Return array of:
-        // { value, x, y }
-        return [];
-    }
-
-    // ---- Fake enemy detection (placeholder) ----
-    // Replace with real enemy detection later
-    function detectEnemies() {
-        // Return array of:
-        // { id, x, y, signature }
-        return [];
-    }
-
     // ---- Main loop ----
     function loop() {
         if (!running) return;
 
-        // 1. Detect damage numbers
-        const dmgList = detectDamageNumbers();
+        // 1. OCR → detect damage numbers
+        const dmgList = OCR.detectDamageNumbers();
+
+        // 2. Feed damage numbers into DPS + EnemyTracker
         for (const dmg of dmgList) {
             DPSEngine.registerHit(dmg);
         }
 
-        // 2. Detect enemies
-        const enemies = detectEnemies();
+        // 3. Detect enemies (placeholder until secret finder)
+        const enemies = []; // You will replace this later
         EnemyTracker.updateEnemies(enemies);
 
-        // 3. Render overlay
+        // 4. Render overlay
         renderOverlay();
 
         requestAnimationFrame(loop);
@@ -128,7 +110,7 @@
         }
     }
 
-    // Expose globally for pluginHost + pluginInjector
+    // Expose globally
     window.startDPSPlugin = startDPSPlugin;
     window.stopDPSPlugin = stopDPSPlugin;
 
