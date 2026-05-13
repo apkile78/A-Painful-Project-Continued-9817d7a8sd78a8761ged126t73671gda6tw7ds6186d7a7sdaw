@@ -7,7 +7,7 @@ html, body {
     background: #000;
     color: #fff;
     font-family: sans-serif;
-    overflow: hidden !important; /* prevents scrollbars */
+    overflow: hidden !important; /* Prevent ANY scrolling */
 }
 
 #topBar {
@@ -89,14 +89,16 @@ button.active {
     box-sizing: border-box;
     transition: 0.25s ease;
     z-index: 9998;
+    overflow: hidden !important; /* Prevent sidebar scrolling */
 }
+
 #searchContainer.active {
     left: 0;
 }
 
 #savedSites {
     max-height: 200px;
-    overflow-y: auto;
+    overflow-y: auto; /* Only this scrolls */
     background: #181818;
     border: 1px solid #333;
     margin-top: 6px;
@@ -122,7 +124,7 @@ button.active {
 =============================== */
 #viewer {
     width: 100%;
-    height: calc(100vh - 60px);
+    height: 100vh; /* FIXED — no more calc() */
     background: #000;
     position: relative;
     z-index: 1;
@@ -135,7 +137,7 @@ body.uiHidden #topBar {
     transform: translateY(-60px);
     opacity: 0;
     pointer-events: none;
-    border-bottom: none !important; /* removes grey line */
+    border-bottom: none !important; /* Remove grey line */
 }
 
 body.uiHidden #viewer {
@@ -144,10 +146,11 @@ body.uiHidden #viewer {
     padding: 0;
 }
 
-/* Sidebar stays inside viewport when UI is hidden */
+/* Sidebar stays fixed and non-scrolling when UI is hidden */
 body.uiHidden #searchContainer {
     top: 0 !important;
     height: 100vh !important;
+    overflow: hidden !important;
 }
 
 /* Autocomplete stays inside viewport */
