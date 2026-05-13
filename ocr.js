@@ -1,98 +1,13 @@
 // ocr.js
-// Lightweight pixel-pattern OCR for floating damage numbers
+// Complete pixel-pattern OCR with multi-digit grouping
 
 (function () {
 
-    // Canvas used for screen capture
     let capCanvas = null;
     let capCtx = null;
 
-    // Canvas used for glyph extraction
-    let glyphCanvas = null;
-    let glyphCtx = null;
-
-    // Damage number color thresholds (tunable)
-    const COLOR_THRESHOLDS = {
-        minBrightness: 180,   // bright text
-        minSaturation: 40,    // avoid gray UI
-        maxBackground: 80     // avoid dark backgrounds
-    };
-
-    // Predefined glyph templates (0–9)
-    // Each template is a tiny binary matrix representing the digit shape
-    // You can refine these later for your game's font
-    const DIGIT_TEMPLATES = {
-        "0": [
-            "01110",
-            "10001",
-            "10001",
-            "10001",
-            "01110"
-        ],
-        "1": [
-            "00100",
-            "01100",
-            "00100",
-            "00100",
-            "01110"
-        ],
-        "2": [
-            "01110",
-            "10001",
-            "00010",
-            "00100",
-            "11111"
-        ],
-        "3": [
-            "11110",
-            "00001",
-            "01110",
-            "00001",
-            "11110"
-        ],
-        "4": [
-            "10010",
-            "10010",
-            "11111",
-            "00010",
-            "00010"
-        ],
-        "5": [
-            "11111",
-            "10000",
-            "11110",
-            "00001",
-            "11110"
-        ],
-        "6": [
-            "01110",
-            "10000",
-            "11110",
-            "10001",
-            "01110"
-        ],
-        "7": [
-            "11111",
-            "00010",
-            "00100",
-            "01000",
-            "01000"
-        ],
-        "8": [
-            "01110",
-            "10001",
-            "01110",
-            "10001",
-            "01110"
-        ],
-        "9": [
-            "01110",
-            "10001",
-            "01111",
-            "00001",
-            "01110"
-        ]
-    };
+    const DIGIT_SIZE = 20; // glyph extraction size
+    const SCAN_STEP = 4;   // how often we scan pixels
 
     // ---- Initialize canvases ----
     function init() {
@@ -100,122 +15,165 @@
             capCanvas = document.createElement("canvas");
             capCtx = capCanvas.getContext("2d");
         }
-        if (!glyphCanvas) {
-            glyphCanvas = document.createElement("canvas");
-            glyphCanvas.width = 20;
-            glyphCanvas.height = 20;
-            glyphCtx = glyphCanvas.getContext("2d");
-        }
     }
 
-    // ---- Capture screen region ----
-    function captureRegion(x, y, w, h) {
+    // ---- Capture screen ----
+    function capture() {
         init();
+        const w = window.innerWidth;
+        const h = window.innerHeight;
         capCanvas.width = w;
         capCanvas.height = h;
-        capCtx.drawImage(document.body, x, y, w, h, 0, 0, w, h);
+        capCtx.drawImage(document.body, 0, 0, w, h);
         return capCtx.getImageData(0, 0, w, h);
     }
 
-    // ---- Check if pixel is likely a damage number ----
-    function isDamagePixel(r, g, b) {
+    // ---- Simple bright pixel check ----
+    function isBright(r, g, b) {
         const brightness = (r + g + b) / 3;
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        const saturation = max - min;
-
-        return (
-            brightness > COLOR_THRESHOLDS.minBrightness &&
-            saturation > COLOR_THRESHOLDS.minSaturation
-        );
+        return brightness > 180;
     }
 
-    // ---- Extract glyph from region ----
-    function extractGlyph(imgData, x, y) {
-        glyphCtx.clearRect(0, 0, 20, 20);
-        glyphCtx.putImageData(imgData, -x, -y);
-        const data = glyphCtx.getImageData(0, 0, 20, 20).data;
+    // ---- Extract a 20x20 glyph ----
+    function extractGlyph(img, gx, gy) {
+        const w = img.width;
+        const h = img.height;
+        const data = img.data;
 
-        // Convert to binary matrix
-        const matrix = [];
-        for (let row = 0; row < 20; row++) {
-            let line = "";
-            for (let col = 0; col < 20; col++) {
-                const idx = (row * 20 + col) * 4;
+        const glyph = [];
+
+        for (let y = 0; y < DIGIT_SIZE; y++) {
+            let row = "";
+            for (let x = 0; x < DIGIT_SIZE; x++) {
+                const px = gx + x;
+                const py = gy + y;
+                if (px < 0 || py < 0 || px >= w || py >= h) {
+                    row += "0";
+                    continue;
+                }
+                const idx = (py * w + px) * 4;
                 const r = data[idx], g = data[idx+1], b = data[idx+2];
-                line += isDamagePixel(r, g, b) ? "1" : "0";
+                row += isBright(r, g, b) ? "1" : "0";
             }
-            matrix.push(line);
+            glyph.push(row);
         }
-        return matrix;
+
+        return glyph;
     }
 
-    // ---- Match glyph to digit template ----
-    function matchDigit(matrix) {
-        let bestDigit = null;
+    // ---- Digit templates (5x5 core) ----
+    const TEMPLATES = {
+        "0": ["01110","10001","10001","10001","01110"],
+        "1": ["00100","01100","00100","00100","01110"],
+        "2": ["01110","10001","00010","00100","11111"],
+        "3": ["11110","00001","01110","00001","11110"],
+        "4": ["10010","10010","11111","00010","00010"],
+        "5": ["11111","10000","11110","00001","11110"],
+        "6": ["01110","10000","11110","10001","01110"],
+        "7": ["11111","00010","00100","01000","01000"],
+        "8": ["01110","10001","01110","10001","01110"],
+        "9": ["01110","10001","01111","00001","01110"]
+    };
+
+    // ---- Match glyph to digit ----
+    function matchDigit(glyph) {
+        let best = null;
         let bestScore = Infinity;
 
-        for (const digit in DIGIT_TEMPLATES) {
-            const template = DIGIT_TEMPLATES[digit];
+        for (const d in TEMPLATES) {
+            const tmpl = TEMPLATES[d];
             let score = 0;
 
-            for (let r = 0; r < template.length; r++) {
-                for (let c = 0; c < template[r].length; c++) {
-                    const expected = template[r][c];
-                    const actual = matrix[r][c];
-                    if (expected !== actual) score++;
+            for (let y = 0; y < tmpl.length; y++) {
+                for (let x = 0; x < tmpl[y].length; x++) {
+                    if (glyph[y][x] !== tmpl[y][x]) score++;
                 }
             }
 
             if (score < bestScore) {
                 bestScore = score;
-                bestDigit = digit;
+                best = d;
             }
         }
 
-        return bestDigit;
+        return best;
     }
 
-    // ---- Detect damage numbers ----
-    function detectDamageNumbers() {
-        init();
-
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        const img = captureRegion(0, 0, w, h);
+    // ---- Detect digits across screen ----
+    function detectDigits() {
+        const img = capture();
+        const w = img.width;
+        const h = img.height;
         const data = img.data;
 
-        const results = [];
+        const digits = [];
 
-        // Scan for bright clusters (damage numbers)
-        for (let y = 0; y < h; y += 4) {
-            for (let x = 0; x < w; x += 4) {
+        for (let y = 0; y < h; y += SCAN_STEP) {
+            for (let x = 0; x < w; x += SCAN_STEP) {
                 const idx = (y * w + x) * 4;
                 const r = data[idx], g = data[idx+1], b = data[idx+2];
 
-                if (isDamagePixel(r, g, b)) {
-                    // Extract glyph
+                if (isBright(r, g, b)) {
                     const glyph = extractGlyph(img, x, y);
-                    const digit = matchDigit(glyph);
-
-                    if (digit !== null) {
-                        results.push({
-                            value: parseInt(digit),
-                            x,
-                            y
-                        });
+                    const d = matchDigit(glyph);
+                    if (d !== null) {
+                        digits.push({ digit: d, x, y });
                     }
                 }
             }
         }
 
+        return digits;
+    }
+
+    // ---- Group digits into full numbers ----
+    function groupDigits(digits) {
+        digits.sort((a, b) => a.x - b.x);
+
+        const groups = [];
+        let current = [];
+
+        for (let i = 0; i < digits.length; i++) {
+            const d = digits[i];
+
+            if (current.length === 0) {
+                current.push(d);
+                continue;
+            }
+
+            const prev = current[current.length - 1];
+
+            // If close horizontally → same number
+            if (Math.abs(d.x - prev.x) < 25 && Math.abs(d.y - prev.y) < 20) {
+                current.push(d);
+            } else {
+                groups.push(current);
+                current = [d];
+            }
+        }
+
+        if (current.length > 0) groups.push(current);
+
+        // Convert groups to numbers
+        const results = [];
+
+        for (const g of groups) {
+            const value = parseInt(g.map(d => d.digit).join(""));
+            const avgX = g.reduce((s, d) => s + d.x, 0) / g.length;
+            const avgY = g.reduce((s, d) => s + d.y, 0) / g.length;
+
+            results.push({ value, x: avgX, y: avgY });
+        }
+
         return results;
     }
 
-    // Expose globally
-    window.OCR = {
-        detectDamageNumbers
-    };
+    // ---- Public API ----
+    function detectDamageNumbers() {
+        const digits = detectDigits();
+        return groupDigits(digits);
+    }
+
+    window.OCR = { detectDamageNumbers };
 
 })();
