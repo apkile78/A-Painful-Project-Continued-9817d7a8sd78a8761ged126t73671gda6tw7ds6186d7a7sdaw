@@ -76,6 +76,7 @@ button.active {
     border-bottom: 1px solid #333;
     cursor: pointer;
 }
+
 .autoItem:hover {
     background: #333;
 }
@@ -115,6 +116,7 @@ button.active {
     border-bottom: 1px solid #333;
     cursor: pointer;
 }
+
 .savedItem:hover {
     background: #333;
 }
@@ -159,7 +161,9 @@ body.uiHidden #searchContainer {
     overflow: hidden !important;
 }
 
-/* Reveal button */
+/* ===============================
+   REVEAL BUTTON
+=============================== */
 #mnuReveal {
     position: fixed;
     bottom: 10px;
@@ -179,6 +183,7 @@ body.uiHidden #searchContainer {
 body.uiHidden #mnuReveal {
     pointer-events: auto;
 }
+
 body.uiHidden #mnuReveal:hover {
     opacity: 1;
 }
