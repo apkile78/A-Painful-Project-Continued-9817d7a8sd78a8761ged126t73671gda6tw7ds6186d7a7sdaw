@@ -7,12 +7,10 @@
     let overlayCanvas = null;
     let ctx = null;
 
-    // ---- Start the plugin ----
     function startDPSPlugin(doc) {
         if (running) return;
         running = true;
 
-        // Create overlay canvas
         overlayCanvas = doc.createElement("canvas");
         overlayCanvas.style.position = "fixed";
         overlayCanvas.style.left = "0";
@@ -31,7 +29,6 @@
         loop();
     }
 
-    // ---- Stop the plugin ----
     function stopDPSPlugin() {
         running = false;
         if (overlayCanvas && overlayCanvas.parentNode) {
@@ -42,42 +39,33 @@
         DPSEngine.reset();
     }
 
-    // ---- Resize overlay ----
     function resizeCanvas() {
         if (!overlayCanvas) return;
         overlayCanvas.width = window.innerWidth;
         overlayCanvas.height = window.innerHeight;
     }
 
-    // ---- Main loop ----
     function loop() {
         if (!running) return;
 
-        // 1. OCR → detect damage numbers
         const dmgList = OCR.detectDamageNumbers();
-
-        // 2. Feed damage numbers into DPS + EnemyTracker
         for (const dmg of dmgList) {
             DPSEngine.registerHit(dmg);
         }
 
-        // 3. Detect enemies (placeholder until secret finder)
-        const enemies = []; // You will replace this later
+        const enemies = [];
         EnemyTracker.updateEnemies(enemies);
 
-        // 4. Render overlay
         renderOverlay();
 
         requestAnimationFrame(loop);
     }
 
-    // ---- Render overlay ----
     function renderOverlay() {
         if (!ctx) return;
 
         ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
-        // Draw DPS
         const dps = DPSEngine.getCurrentDPS();
         const total = DPSEngine.getTotalDamage();
 
@@ -86,31 +74,26 @@
         ctx.fillText(`DPS: ${Math.round(dps)}`, 20, 40);
         ctx.fillText(`Total: ${Math.round(total)}`, 20, 70);
 
-        // Draw enemy HP overlays
         const snapshot = EnemyTracker.getEnemySnapshot();
         for (const e of snapshot) {
             const est = e.estimatedHP;
             const dmg = e.totalDamage;
 
             if (est) {
-                // White = estimated HP
                 ctx.fillStyle = "white";
                 ctx.fillText(Math.round(est), e.x, e.y - 20);
 
-                // Blue = overkill
                 if (dmg > est) {
                     ctx.fillStyle = "cyan";
                     ctx.fillText(`+${Math.round(dmg - est)}`, e.x, e.y - 40);
                 }
             } else {
-                // Unknown HP yet
                 ctx.fillStyle = "gray";
                 ctx.fillText("?", e.x, e.y - 20);
             }
         }
     }
 
-    // Expose globally
     window.startDPSPlugin = startDPSPlugin;
     window.stopDPSPlugin = stopDPSPlugin;
 
