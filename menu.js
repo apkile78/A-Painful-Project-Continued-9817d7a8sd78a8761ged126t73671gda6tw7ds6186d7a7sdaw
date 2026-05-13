@@ -82,10 +82,10 @@ document.getElementById("mnuReveal").onclick = () => {
 
 
 // ===============================
-// DPS TOGGLE BUTTON (ADDED)
+// DPS TOGGLE BUTTON (FIXED)
 // ===============================
 
-document.addEventListener("DOMContentLoaded", () => {
+window.onload = () => {
 
     const dpsBtn = document.getElementById("toggleDPS");
 
@@ -104,4 +104,4 @@ document.addEventListener("DOMContentLoaded", () => {
         refreshDPSButton();
     }
 
-});
+};
