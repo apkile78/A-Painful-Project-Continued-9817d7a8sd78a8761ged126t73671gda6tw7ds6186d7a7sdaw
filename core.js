@@ -134,7 +134,6 @@ document.getElementById("vtprBtn").onclick = () => {
 
     if (!url.startsWith("http")) url = "https://" + url;
 
-    // Build embed element based on current embedMode
     let embedHTML = "";
 
     if (embedMode === "iframe") {
