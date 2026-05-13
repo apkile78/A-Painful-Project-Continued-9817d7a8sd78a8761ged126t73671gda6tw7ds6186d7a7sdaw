@@ -127,19 +127,32 @@ iframe { width: 100vw; height: 100vh; border: none; }
     }
 };
 
-// VIEW POPUP (vew)
+// VIEW POPUP (vew) — FIXED TO MATCH EMBED MODE
 document.getElementById("vtprBtn").onclick = () => {
     let url = currentUrl || urlInput.value.trim();
     if (!url) return;
 
     if (!url.startsWith("http")) url = "https://" + url;
 
+    // Build embed element based on current embedMode
+    let embedHTML = "";
+
+    if (embedMode === "iframe") {
+        embedHTML = `<iframe src="${url}"></iframe>`;
+    } 
+    else if (embedMode === "object") {
+        embedHTML = `<object data="${url}" type="text/html"></object>`;
+    } 
+    else if (embedMode === "embed") {
+        embedHTML = `<embed src="${url}" type="text/html"></embed>`;
+    }
+
     const popupHTML = `
 <style>
 html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
-iframe { width: 100vw; height: 100vh; border: none; }
+iframe, object, embed { width: 100vw; height: 100vh; border: none; }
 </style>
-<iframe src="${url}"></iframe>
+${embedHTML}
 `;
 
     if (popupMode === "about") {
