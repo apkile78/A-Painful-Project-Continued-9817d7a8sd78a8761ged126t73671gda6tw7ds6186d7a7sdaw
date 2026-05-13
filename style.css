@@ -82,7 +82,7 @@ button.active {
 }
 
 /* ===============================
-   SIDEBAR (FLOATING)
+   SIDEBAR (FLOATING ABOVE TOPBAR)
 =============================== */
 #searchContainer {
     position: fixed;
@@ -94,7 +94,7 @@ button.active {
     padding: 10px;
     padding-bottom: 0 !important;
     box-sizing: border-box;
-    z-index: 9998;
+    z-index: 10000; /* FIXED — now above topBar */
     transition: left 0.25s ease;
     overflow: hidden !important;
 }
