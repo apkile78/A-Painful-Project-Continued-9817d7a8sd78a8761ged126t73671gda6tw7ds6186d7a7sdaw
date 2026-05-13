@@ -1,7 +1,3 @@
-// ===============================
-// CORE VIEWER + POPUP LOGIC
-// ===============================
-
 const urlInput = document.getElementById("urlInput");
 const viewer = document.getElementById("viewer");
 
@@ -127,7 +123,7 @@ iframe { width: 100vw; height: 100vh; border: none; }
     }
 };
 
-// VIEW POPUP (vew) — FIXED TO MATCH EMBED MODE
+// VIEW POPUP (vew)
 document.getElementById("vtprBtn").onclick = () => {
     let url = currentUrl || urlInput.value.trim();
     if (!url) return;
