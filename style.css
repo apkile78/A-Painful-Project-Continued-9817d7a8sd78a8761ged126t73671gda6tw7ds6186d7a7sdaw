@@ -1,136 +1,164 @@
 /* ===============================
-   GLOBAL RESET
-   =============================== */
-* {
+   GLOBAL
+=============================== */
+body {
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
+    font-family: sans-serif;
 }
 
-body, html {
-    height: 100%;
-    background: #111;
-    color: white;
-    overflow: hidden;
-}
-
-
-/* ===============================
-   TOP BAR
-   =============================== */
 #topBar {
     width: 100%;
-    background: #222;
-    padding: 6px;
+    height: 60px;
+    background: #111;
     display: flex;
-    gap: 6px;
     align-items: center;
-    border-bottom: 1px solid #333;
+    padding: 0 10px;
+    box-sizing: border-box;
+    gap: 6px;
+    overflow: visible;
+    transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-#topBar button {
-    background: #333;
-    color: white;
-    border: 1px solid #444;
+button {
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
     padding: 6px 10px;
+    margin-right: 6px;
     cursor: pointer;
-    border-radius: 4px;
 }
 
-#topBar button:hover {
-    background: #444;
+button.active {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
 }
 
 #urlInput {
     flex: 1;
     padding: 6px;
-    border-radius: 4px;
-    border: 1px solid #444;
-    background: #1a1a1a;
-    color: white;
+    background: #000;
+    border: 1px solid #fff;
+    color: #fff;
 }
 
+.group-gap {
+    width: 4px;
+}
 
 /* ===============================
-   AUTOCOMPLETE DROPDOWN
-   =============================== */
+   AUTOCOMPLETE
+=============================== */
 #autocomplete {
     position: absolute;
-    top: 42px;
-    left: 6px;
-    right: 6px;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    max-height: 200px;
+    top: 60px;
+    left: 10px;
+    width: calc(100% - 20px);
+    max-height: 250px;
     overflow-y: auto;
-    z-index: 9999;
-    display: none;
+    background: #111;
+    border: 1px solid #333;
+    z-index: 99999;
 }
 
 .autoItem {
     padding: 6px;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid #333;
     cursor: pointer;
 }
-
 .autoItem:hover {
     background: #333;
 }
 
-
 /* ===============================
-   IFRAME VIEW
-   =============================== */
-iframe {
-    width: 100%;
-    height: calc(100% - 50px);
-    border: none;
-    background: #000;
-}
-
-
-/* ===============================
-   MENU PANEL
-   =============================== */
-#menuPanel {
-    position: absolute;
-    top: 50px;
-    right: 10px;
-    width: 220px;
-    background: #1a1a1a;
-    border: 1px solid #333;
+   SIDEBAR
+=============================== */
+#searchContainer {
+    width: 300px;
+    background: #111;
+    height: 100vh;
+    position: fixed;
+    left: -300px;
+    top: 0;
     padding: 10px;
-    display: none;
-    z-index: 9999;
+    box-sizing: border-box;
+    transition: 0.25s ease;
+    z-index: 9998;
+}
+#searchContainer.active {
+    left: 0;
 }
 
-.menuItem {
-    padding: 8px;
-    border-bottom: 1px solid #222;
-    cursor: pointer;
-}
-
-.menuItem:hover {
-    background: #333;
-}
-
-
-/* ===============================
-   SAVED SITES LIST
-   =============================== */
-#savedList {
-    margin-top: 10px;
+#savedSites {
     max-height: 200px;
     overflow-y: auto;
+    background: #181818;
+    border: 1px solid #333;
+    margin-top: 6px;
 }
 
 .savedItem {
     padding: 6px;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+}
+.savedItem:hover {
+    background: #333;
+}
+
+.deleteBtn {
+    float: right;
+    color: #f44;
     cursor: pointer;
 }
 
-.savedItem:hover {
-    background: #333;
+/* ===============================
+   VIEWER
+=============================== */
+#viewer {
+    width: 100%;
+    height: calc(100vh - 60px);
+    background: #000;
+    position: relative;
+    z-index: 1;
+}
+
+/* ===============================
+   UI-HIDE SYSTEM (FIXED)
+=============================== */
+body.uiHidden #topBar {
+    transform: translateY(-60px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.uiHidden #viewer {
+    height: 100vh !important;
+    margin: 0;
+    padding: 0;
+}
+
+#mnuReveal {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    background: #000;
+    border: 1px solid #fff;
+    color: #fff;
+    border-radius: 4px;
+    transition: opacity 0.15s;
+    z-index: 9999;
+}
+
+body.uiHidden #mnuReveal {
+    pointer-events: auto;
+}
+body.uiHidden #mnuReveal:hover {
+    opacity: 1;
 }
