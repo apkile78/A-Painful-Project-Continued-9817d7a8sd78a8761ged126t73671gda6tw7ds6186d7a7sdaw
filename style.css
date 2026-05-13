@@ -7,13 +7,16 @@ html, body {
     background: #000;
     color: #fff;
     font-family: sans-serif;
-    overflow: hidden !important; /* Prevent ANY scrolling */
+    overflow: hidden !important;
 }
 
 /* ===============================
-   TOP BAR
+   TOP BAR (FLOATING)
 =============================== */
 #topBar {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 60px;
     background: #111;
@@ -22,8 +25,7 @@ html, body {
     padding: 0 10px;
     box-sizing: border-box;
     gap: 6px;
-    overflow: visible;
-    border-bottom: 1px solid #333;
+    z-index: 9999;
     transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
@@ -55,10 +57,10 @@ button.active {
 }
 
 /* ===============================
-   AUTOCOMPLETE
+   AUTOCOMPLETE (FLOATING)
 =============================== */
 #autocomplete {
-    position: absolute;
+    position: fixed;
     top: 60px;
     left: 10px;
     width: calc(100% - 20px);
@@ -79,21 +81,21 @@ button.active {
 }
 
 /* ===============================
-   SIDEBAR
+   SIDEBAR (FLOATING)
 =============================== */
 #searchContainer {
-    width: 300px;
-    background: #111;
-    height: 100vh !important;
     position: fixed;
+    top: 0;
     left: -300px;
-    top: 0 !important;
+    width: 300px;
+    height: 100vh;
+    background: #111;
     padding: 10px;
     padding-bottom: 0 !important;
     box-sizing: border-box;
-    transition: 0.25s ease;
     z-index: 9998;
-    overflow: hidden !important; /* Prevent sidebar scrolling */
+    transition: left 0.25s ease;
+    overflow: hidden !important;
 }
 
 #searchContainer.active {
@@ -102,7 +104,7 @@ button.active {
 
 #savedSites {
     max-height: 200px;
-    overflow-y: auto; /* Only this scrolls */
+    overflow-y: auto;
     background: #181818;
     border: 1px solid #333;
     margin-top: 6px;
@@ -124,47 +126,37 @@ button.active {
 }
 
 /* ===============================
-   VIEWER
+   VIEWER (FULLSCREEN)
 =============================== */
 #viewer {
-    width: 100%;
-    height: 100vh !important; /* FIXED — no more calc() */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
     background: #000;
-    position: relative;
-    top: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
     z-index: 1;
 }
 
 /* ===============================
-   UI-HIDE SYSTEM (FULL FIX)
+   UI-HIDE SYSTEM
 =============================== */
 body.uiHidden #topBar {
     transform: translateY(-60px);
     opacity: 0;
     pointer-events: none;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
 }
 
-body.uiHidden #viewer {
-    height: 100vh !important;
-    margin: 0 !important;
-    padding: 0 !important;
+body.uiHidden #autocomplete {
+    top: 0 !important;
 }
 
-/* Sidebar stays fixed and non-scrolling when UI is hidden */
 body.uiHidden #searchContainer {
     top: 0 !important;
     height: 100vh !important;
     overflow: hidden !important;
-}
-
-/* Autocomplete stays inside viewport */
-body.uiHidden #autocomplete {
-    top: 0 !important;
 }
 
 /* Reveal button */
