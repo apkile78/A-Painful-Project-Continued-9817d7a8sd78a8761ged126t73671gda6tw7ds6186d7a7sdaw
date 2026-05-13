@@ -2,32 +2,25 @@
 
 (function () {
 
-    // Rolling damage events for the last 1000ms
-    // Each entry: { value, time }
     let recentHits = [];
-
-    // Total damage for the entire session
     let totalDamage = 0;
 
-    // DPS window size
-    const WINDOW = 1000; // 1 second
+    // DPS window (1 second)
+    const WINDOW = 1000;
 
-    // ---- Add a damage event ----
-    // dmg = { value, x, y }
     function registerHit(dmg) {
         const now = performance.now();
 
-        // Add to rolling list
+        // Add hit to rolling window
         recentHits.push({ value: dmg.value, time: now });
 
-        // Add to total session damage
+        // Add to total damage
         totalDamage += dmg.value;
 
-        // Pass to EnemyTracker
+        // Assign damage to nearest enemy
         EnemyTracker.assignDamage(dmg);
     }
 
-    // ---- Compute current DPS ----
     function getCurrentDPS() {
         const now = performance.now();
 
@@ -37,26 +30,18 @@
         }
 
         // Sum remaining hits
-        let sum = 0;
-        for (const h of recentHits) {
-            sum += h.value;
-        }
-
-        return sum;
+        return recentHits.reduce((sum, hit) => sum + hit.value, 0);
     }
 
-    // ---- Get total session damage ----
     function getTotalDamage() {
         return totalDamage;
     }
 
-    // ---- Reset everything ----
     function reset() {
         recentHits = [];
         totalDamage = 0;
     }
 
-    // Expose globally for DPS plugin
     window.DPSEngine = {
         registerHit,
         getCurrentDPS,
