@@ -78,3 +78,30 @@ document.getElementById("hdeBtn").onclick = () => {
 document.getElementById("mnuReveal").onclick = () => {
     document.body.classList.remove("uiHidden");
 };
+
+
+
+// ===============================
+// DPS TOGGLE BUTTON (ADDED)
+// ===============================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const dpsBtn = document.getElementById("toggleDPS");
+
+    if (dpsBtn) {
+
+        function refreshDPSButton() {
+            dpsBtn.textContent = "DPS: " + (pluginState.dps ? "ON" : "OFF");
+        }
+
+        dpsBtn.addEventListener("click", () => {
+            pluginState.dps = !pluginState.dps;
+            updateMainPlugins();
+            refreshDPSButton();
+        });
+
+        refreshDPSButton();
+    }
+
+});
