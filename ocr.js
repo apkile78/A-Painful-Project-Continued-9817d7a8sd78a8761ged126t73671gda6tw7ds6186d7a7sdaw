@@ -6,10 +6,9 @@
     let capCanvas = null;
     let capCtx = null;
 
-    const DIGIT_SIZE = 20; // glyph extraction size
-    const SCAN_STEP = 4;   // how often we scan pixels
+    const DIGIT_SIZE = 20;
+    const SCAN_STEP = 4;
 
-    // ---- Initialize canvases ----
     function init() {
         if (!capCanvas) {
             capCanvas = document.createElement("canvas");
@@ -17,7 +16,6 @@
         }
     }
 
-    // ---- Capture screen ----
     function capture() {
         init();
         const w = window.innerWidth;
@@ -28,13 +26,10 @@
         return capCtx.getImageData(0, 0, w, h);
     }
 
-    // ---- Simple bright pixel check ----
     function isBright(r, g, b) {
-        const brightness = (r + g + b) / 3;
-        return brightness > 180;
+        return (r + g + b) / 3 > 180;
     }
 
-    // ---- Extract a 20x20 glyph ----
     function extractGlyph(img, gx, gy) {
         const w = img.width;
         const h = img.height;
@@ -61,7 +56,6 @@
         return glyph;
     }
 
-    // ---- Digit templates (5x5 core) ----
     const TEMPLATES = {
         "0": ["01110","10001","10001","10001","01110"],
         "1": ["00100","01100","00100","00100","01110"],
@@ -75,7 +69,6 @@
         "9": ["01110","10001","01111","00001","01110"]
     };
 
-    // ---- Match glyph to digit ----
     function matchDigit(glyph) {
         let best = null;
         let bestScore = Infinity;
@@ -99,7 +92,6 @@
         return best;
     }
 
-    // ---- Detect digits across screen ----
     function detectDigits() {
         const img = capture();
         const w = img.width;
@@ -126,7 +118,6 @@
         return digits;
     }
 
-    // ---- Group digits into full numbers ----
     function groupDigits(digits) {
         digits.sort((a, b) => a.x - b.x);
 
@@ -143,7 +134,6 @@
 
             const prev = current[current.length - 1];
 
-            // If close horizontally → same number
             if (Math.abs(d.x - prev.x) < 25 && Math.abs(d.y - prev.y) < 20) {
                 current.push(d);
             } else {
@@ -154,7 +144,6 @@
 
         if (current.length > 0) groups.push(current);
 
-        // Convert groups to numbers
         const results = [];
 
         for (const g of groups) {
@@ -168,7 +157,6 @@
         return results;
     }
 
-    // ---- Public API ----
     function detectDamageNumbers() {
         const digits = detectDigits();
         return groupDigits(digits);
