@@ -2,19 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Your Game Navigator</title>
-
-<!-- All styling is now external -->
+<title>Navigator</title>
 <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
 
-<!-- ——————————————————————————————
-     TOP BAR
-—————————————————————————————— -->
 <div id="topBar">
-
     <input id="urlInput" placeholder="Enter URL...">
     <button id="goBtn">Go</button>
     <button id="saveBtn">Save</button>
@@ -31,14 +24,10 @@
     <button class="modeBtn active" data-mode="iframe">iframe</button>
     <button class="modeBtn" data-mode="object">js</button>
     <button class="modeBtn" data-mode="embed">embed</button>
-
 </div>
 
 <div id="autocomplete"></div>
 
-<!-- ——————————————————————————————
-     SIDEBAR
-—————————————————————————————— -->
 <div id="searchContainer">
     <button id="closeBtn">Close</button>
     <button id="hdeBtn">hde</button>
@@ -47,16 +36,10 @@
     <div id="savedSites"></div>
 </div>
 
-<!-- ——————————————————————————————
-     VIEWER
-—————————————————————————————— -->
 <div id="viewer"></div>
 
 <button id="mnuReveal">mnu</button>
 
-<!-- ——————————————————————————————
-     SCRIPTS (MODULAR)
-—————————————————————————————— -->
 <script src="siteDB.js"></script>
 <script src="core.js"></script>
 <script src="menu.js"></script>
