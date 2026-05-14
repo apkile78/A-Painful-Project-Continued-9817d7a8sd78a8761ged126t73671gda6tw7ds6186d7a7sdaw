@@ -48,10 +48,10 @@
     function loop() {
         if (!running) return;
 
-        const dmgList = OCR.detectDamageNumbers();
-        for (const dmg of dmgList) {
-            DPSEngine.registerHit(dmg);
-        }
+        // const dmgList = OCR.detectDamageNumbers();
+        // for (const dmg of dmgList) {
+        //     DPSEngine.registerHit(dmg);
+        // }
 
         const enemies = [];
         EnemyTracker.updateEnemies(enemies);
