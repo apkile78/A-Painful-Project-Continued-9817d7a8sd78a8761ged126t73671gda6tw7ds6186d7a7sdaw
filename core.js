@@ -1,163 +1,124 @@
-const urlInput = document.getElementById("urlInput");
-const viewer = document.getElementById("viewer");
+// ===============================
+// CORE VIEWER + POPUP SYSTEM
+// ===============================
 
-let embedMode = "iframe";
-let popupMode = "about";
 let currentUrl = "";
-let coreEl = null;
+const viewer = document.getElementById("viewer");
+const urlInput = document.getElementById("urlInput");
 
-// EMBED MODE SWITCHING
-document.querySelectorAll(".modeBtn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelectorAll(".modeBtn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+// ===============================
+// MAIN GO BUTTON
+// ===============================
+document.getElementById("goBtn").onclick = () => {
+    const url = urlInput.value.trim();
+    if (!url) return;
+    loadURL(url);
+};
 
-        embedMode = btn.dataset.mode;
-        if (currentUrl) updateViewer(currentUrl);
-    });
-});
-
-// VIEWER UPDATE
-function updateViewer(url) {
+// ===============================
+// LOAD URL INTO VIEWER
+// ===============================
+function loadURL(url) {
     currentUrl = url;
 
-    if (!url) {
-        viewer.innerHTML = "";
-        coreEl = null;
-        return;
-    }
+    const mode = document.querySelector(".modeBtn.active").dataset.mode;
 
-    if (!coreEl) {
-        coreEl = document.createElement("iframe");
-        coreEl.style.width = "100%";
-        coreEl.style.height = "100%";
-        coreEl.style.border = "none";
-        viewer.innerHTML = "";
-        viewer.appendChild(coreEl);
-    }
-
-    if (embedMode === "iframe" && coreEl.tagName !== "IFRAME") {
-        const newEl = document.createElement("iframe");
-        copyCoreProps(coreEl, newEl);
-        coreEl.replaceWith(newEl);
-        coreEl = newEl;
-    } else if (embedMode === "object" && coreEl.tagName !== "OBJECT") {
-        const newEl = document.createElement("object");
-        copyCoreProps(coreEl, newEl);
-        newEl.type = "text/html";
-        coreEl.replaceWith(newEl);
-        coreEl = newEl;
-    } else if (embedMode === "embed" && coreEl.tagName !== "EMBED") {
-        const newEl = document.createElement("embed");
-        copyCoreProps(coreEl, newEl);
-        newEl.type = "text/html";
-        coreEl.replaceWith(newEl);
-        coreEl = newEl;
-    }
-
-    if (embedMode === "iframe" || embedMode === "embed") {
-        coreEl.src = url;
-    } else {
-        coreEl.data = url;
+    if (mode === "iframe") {
+        viewer.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
+    } else if (mode === "object") {
+        viewer.innerHTML = `<object data="${url}" style="width:100%; height:100%; border:none;"></object>`;
+    } else if (mode === "embed") {
+        viewer.innerHTML = `<embed src="${url}" style="width:100%; height:100%; border:none;"></embed>`;
     }
 }
 
-function copyCoreProps(oldEl, newEl) {
-    newEl.style.cssText = oldEl.style.cssText;
-    if (oldEl.src) newEl.src = oldEl.src;
-    if (oldEl.data) newEl.data = oldEl.data;
-}
-
-// LOAD SITE
-function loadSite() {
-    let url = urlInput.value.trim();
-    if (!url) return;
-
-    if (!url.startsWith("http")) url = "https://" + url;
-    updateViewer(url);
-}
-
-document.getElementById("goBtn").onclick = loadSite;
-
-document.addEventListener("keydown", e => {
-    if (e.key === "Enter") loadSite();
+// ===============================
+// MODE SWITCHING
+// ===============================
+document.querySelectorAll(".modeBtn").forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll(".modeBtn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        if (currentUrl) loadURL(currentUrl);
+    };
 });
 
-// POPUP MODE TOGGLE
-const abtBtn = document.getElementById("abtBtn");
-const blbBtn = document.getElementById("blbBtn");
-
-abtBtn.onclick = () => {
-    popupMode = "about";
-    abtBtn.classList.add("active");
-    blbBtn.classList.remove("active");
-};
-
-blbBtn.onclick = () => {
-    popupMode = "blob";
-    blbBtn.classList.add("active");
-    abtBtn.classList.remove("active");
-};
-
-// POPUP (popt)
+// ===============================
+// POPUP BUTTON (POPT)
+// ===============================
 document.getElementById("clckBtn").onclick = () => {
-    const navUrl = location.origin + location.pathname;
-
-    const popupHTML = `
-<style>
-html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
-iframe { width: 100vw; height: 100vh; border: none; }
-</style>
-<iframe src="${navUrl}"></iframe>
-`;
-
-    if (popupMode === "about") {
-        const win = window.open("about:blank", "_blank");
-        if (win) {
-            win.document.write(popupHTML);
-            win.document.close();
-        }
-    } else {
-        const blob = new Blob([popupHTML], { type: "text/html" });
-        window.open(URL.createObjectURL(blob), "_blank");
-    }
-};
-
-// VIEW POPUP (vew)
-document.getElementById("vtprBtn").onclick = () => {
-    let url = currentUrl || urlInput.value.trim();
+    const url = currentUrl || urlInput.value.trim();
     if (!url) return;
 
-    if (!url.startsWith("http")) url = "https://" + url;
+    const win = window.open("about:blank", "_blank");
+    if (!win) return;
 
-    let embedHTML = "";
+    win.document.write(`
+        <html>
+        <head><title>Popup</title></head>
+        <body style="margin:0; padding:0; background:black;">
+            <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
+        </body>
+        </html>
+    `);
+    win.document.close();
 
-    if (embedMode === "iframe") {
-        embedHTML = `<iframe src="${url}"></iframe>`;
-    } 
-    else if (embedMode === "object") {
-        embedHTML = `<object data="${url}" type="text/html"></object>`;
-    } 
-    else if (embedMode === "embed") {
-        embedHTML = `<embed src="${url}" type="text/html"></embed>`;
-    }
-
-    const popupHTML = `
-<style>
-html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
-iframe, object, embed { width: 100vw; height: 100vh; border: none; }
-</style>
-${embedHTML}
-`;
-
-    if (popupMode === "about") {
-        const win = window.open("about:blank", "_blank");
-        if (win) {
-            win.document.write(popupHTML);
-            win.document.close();
-        }
-    } else {
-        const blob = new Blob([popupHTML], { type: "text/html" });
-        window.open(URL.createObjectURL(blob), "_blank");
-    }
+    // Inject plugins (works fine)
+    PluginInjector.injectIntoBlobWindow(win);
 };
+
+// ===============================
+// VIEW POPUP (VEW) — FIXED
+// ===============================
+document.getElementById("vtprBtn").onclick = () => {
+    const url = currentUrl || urlInput.value.trim();
+    if (!url) return;
+
+    const win = window.open("about:blank", "_blank");
+    if (!win) return;
+
+    // Write viewer content FIRST
+    win.document.open();
+    win.document.write(`
+        <html>
+        <head><title>Viewer</title></head>
+        <body style="margin:0; padding:0; background:black;">
+            <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
+        </body>
+        </html>
+    `);
+    win.document.close();
+
+    // ⭐ FIX: Inject AFTER the embed is written
+    setTimeout(() => {
+        PluginInjector.injectPlugins(win);
+    }, 50);
+};
+
+// ===============================
+// ABOUT:BLANK POPUP
+// ===============================
+document.getElementById("abtBtn").onclick = () => {
+    const win = window.open("about:blank", "_blank");
+    if (!win) return;
+
+    PluginInjector.injectPlugins(win);
+};
+
+// ===============================
+// BLOB POPUP
+// ===============================
+document.getElementById("blbBtn").onclick = () => {
+    const blob = new Blob(["<html><body style='background:black;'></body></html>"], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+
+    const win = window.open(url, "_blank");
+    if (!win) return;
+
+    PluginInjector.injectIntoBlobWindow(win);
+};
+
+// ===============================
+// EXPORT GLOBAL
+// ===============================
+window.loadURL = loadURL;
