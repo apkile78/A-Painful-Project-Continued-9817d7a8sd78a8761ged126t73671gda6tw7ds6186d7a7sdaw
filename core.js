@@ -58,6 +58,8 @@ document.getElementById("clckBtn").onclick = () => {
         <html lang="en">
         <head>
             <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Popup</title>
         </head>
         <body style="margin:0; padding:0; background:black;">
@@ -74,7 +76,7 @@ document.getElementById("clckBtn").onclick = () => {
 // VIEW POPUP (VEW) — FULLY FIXED
 // ===============================
 document.getElementById("vtprBtn").onclick = () => {
-    const url = currentUrl || urlInput.value.trim();
+    const url = currentUrl;
     if (!url) return;
 
     const win = window.open("about:blank", "_blank");
@@ -86,6 +88,8 @@ document.getElementById("vtprBtn").onclick = () => {
         <html lang="en">
         <head>
             <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Viewer</title>
         </head>
         <body style="margin:0; padding:0; background:black;">
@@ -95,7 +99,7 @@ document.getElementById("vtprBtn").onclick = () => {
     `);
     win.document.close();
 
-    // ⭐ Inject AFTER the iframe is written
+    // ⭐ Inject AFTER the iframe is fully written
     setTimeout(() => {
         PluginInjector.injectPlugins(win);
     }, 50);
@@ -115,7 +119,10 @@ document.getElementById("abtBtn").onclick = () => {
 // BLOB POPUP
 // ===============================
 document.getElementById("blbBtn").onclick = () => {
-    const blob = new Blob(["<!DOCTYPE html><html><body style='background:black;'></body></html>"], { type: "text/html" });
+    const blob = new Blob([
+        "<!DOCTYPE html><html><body style='background:black;'></body></html>"
+    ], { type: "text/html" });
+
     const url = URL.createObjectURL(blob);
 
     const win = window.open(url, "_blank");
