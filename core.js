@@ -54,8 +54,12 @@ document.getElementById("clckBtn").onclick = () => {
     if (!win) return;
 
     win.document.write(`
-        <html>
-        <head><title>Popup</title></head>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Popup</title>
+        </head>
         <body style="margin:0; padding:0; background:black;">
             <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
         </body>
@@ -63,12 +67,11 @@ document.getElementById("clckBtn").onclick = () => {
     `);
     win.document.close();
 
-    // Inject plugins (works fine)
     PluginInjector.injectIntoBlobWindow(win);
 };
 
 // ===============================
-// VIEW POPUP (VEW) — FIXED
+// VIEW POPUP (VEW) — FULLY FIXED
 // ===============================
 document.getElementById("vtprBtn").onclick = () => {
     const url = currentUrl || urlInput.value.trim();
@@ -77,11 +80,14 @@ document.getElementById("vtprBtn").onclick = () => {
     const win = window.open("about:blank", "_blank");
     if (!win) return;
 
-    // Write viewer content FIRST
     win.document.open();
     win.document.write(`
-        <html>
-        <head><title>Viewer</title></head>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Viewer</title>
+        </head>
         <body style="margin:0; padding:0; background:black;">
             <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
         </body>
@@ -89,7 +95,7 @@ document.getElementById("vtprBtn").onclick = () => {
     `);
     win.document.close();
 
-    // ⭐ FIX: Inject AFTER the embed is written
+    // ⭐ Inject AFTER the iframe is written
     setTimeout(() => {
         PluginInjector.injectPlugins(win);
     }, 50);
@@ -109,7 +115,7 @@ document.getElementById("abtBtn").onclick = () => {
 // BLOB POPUP
 // ===============================
 document.getElementById("blbBtn").onclick = () => {
-    const blob = new Blob(["<html><body style='background:black;'></body></html>"], { type: "text/html" });
+    const blob = new Blob(["<!DOCTYPE html><html><body style='background:black;'></body></html>"], { type: "text/html" });
     const url = URL.createObjectURL(blob);
 
     const win = window.open(url, "_blank");
