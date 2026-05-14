@@ -54,18 +54,7 @@ document.getElementById("clckBtn").onclick = () => {
     if (!win) return;
 
     win.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Popup</title>
-        </head>
-        <body style="margin:0; padding:0; background:black;">
-            <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
-        </body>
-        </html>
+        <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
     `);
     win.document.close();
 
@@ -73,7 +62,7 @@ document.getElementById("clckBtn").onclick = () => {
 };
 
 // ===============================
-// VIEW POPUP (VEW) — FULLY FIXED
+// VIEW POPUP (VEW) — RESTORED SIMPLE VERSION
 // ===============================
 document.getElementById("vtprBtn").onclick = () => {
     // ⭐ REAL FIX: Always use a valid URL
@@ -83,24 +72,13 @@ document.getElementById("vtprBtn").onclick = () => {
     const win = window.open("about:blank", "_blank");
     if (!win) return;
 
-    win.document.open();
+    // ⭐ Simple original-style VEW
     win.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Viewer</title>
-        </head>
-        <body style="margin:0; padding:0; background:black;">
-            <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
-        </body>
-        </html>
+        <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
     `);
     win.document.close();
 
-    // ⭐ Inject AFTER the iframe is fully written
+    // ⭐ Inject AFTER iframe is written
     setTimeout(() => {
         PluginInjector.injectPlugins(win);
     }, 50);
@@ -121,7 +99,7 @@ document.getElementById("abtBtn").onclick = () => {
 // ===============================
 document.getElementById("blbBtn").onclick = () => {
     const blob = new Blob([
-        "<!DOCTYPE html><html><body style='background:black;'></body></html>"
+        "<html><body style='background:black;'></body></html>"
     ], { type: "text/html" });
 
     const url = URL.createObjectURL(blob);
