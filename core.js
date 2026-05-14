@@ -76,7 +76,8 @@ document.getElementById("clckBtn").onclick = () => {
 // VIEW POPUP (VEW) — FULLY FIXED
 // ===============================
 document.getElementById("vtprBtn").onclick = () => {
-    const url = currentUrl;
+    // ⭐ REAL FIX: Always use a valid URL
+    const url = currentUrl || urlInput.value.trim();
     if (!url) return;
 
     const win = window.open("about:blank", "_blank");
