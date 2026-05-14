@@ -57,41 +57,29 @@ document.getElementById("clckBtn").onclick = () => {
         <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
     `);
     win.document.close();
-
-    PluginInjector.injectIntoBlobWindow(win);
 };
 
 // ===============================
-// VIEW POPUP (VEW) — RESTORED SIMPLE VERSION
+// VIEW POPUP (VEW)
 // ===============================
 document.getElementById("vtprBtn").onclick = () => {
-    // ⭐ REAL FIX: Always use a valid URL
     const url = currentUrl || urlInput.value.trim();
     if (!url) return;
 
     const win = window.open("about:blank", "_blank");
     if (!win) return;
 
-    // ⭐ Simple original-style VEW
     win.document.write(`
         <iframe src="${url}" style="width:100vw; height:100vh; border:none;"></iframe>
     `);
     win.document.close();
-
-    // ⭐ Inject AFTER iframe is written
-    setTimeout(() => {
-        PluginInjector.injectPlugins(win);
-    }, 50);
 };
 
 // ===============================
 // ABOUT:BLANK POPUP
 // ===============================
 document.getElementById("abtBtn").onclick = () => {
-    const win = window.open("about:blank", "_blank");
-    if (!win) return;
-
-    PluginInjector.injectPlugins(win);
+    window.open("about:blank", "_blank");
 };
 
 // ===============================
@@ -103,11 +91,7 @@ document.getElementById("blbBtn").onclick = () => {
     ], { type: "text/html" });
 
     const url = URL.createObjectURL(blob);
-
-    const win = window.open(url, "_blank");
-    if (!win) return;
-
-    PluginInjector.injectIntoBlobWindow(win);
+    window.open(url, "_blank");
 };
 
 // ===============================
